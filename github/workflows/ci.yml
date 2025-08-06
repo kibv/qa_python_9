@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Docker image
+        run: docker build -t qa_python_9 .
+
+      - name: Start Selenoid
+        run: docker-compose up -d selenoid
+
+      - name: Run tests
+        run: docker-compose run tests
+
+      - name: Stop containers
+        run: docker-compose down

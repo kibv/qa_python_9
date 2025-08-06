@@ -98,7 +98,7 @@ class BasePage:
         return self.find_elements(*locator)
 
     def upload_file(self, locator, path):
-        el = self.wait.until(EC.presence_of_element_located(locator))
+        el = self.driver.find_element(EC.presence_of_element_located(locator))
         el.send_keys(path)
 
     def refresh(self):

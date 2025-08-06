@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  selenoid:
+    image: aerokube/selenoid:latest
+    network_mode: bridge
+    ports:
+      - "4444:4444"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./selenoid:/etc/selenoid"
+    command: ["-conf", "/etc/selenoid/browsers.json"]
+
+  tests:
+    build: .
+    volumes:
+      - ./assets:/app/assets
+    depends_on:
+      - selenoid
+    command: pytest tests/

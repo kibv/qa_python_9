@@ -2,6 +2,9 @@ import random
 from pathlib import Path
 from data.helpers import get_random_number
 
+APP_DIR = Path(__file__).parent.parent  # Поднимаемся на уровень выше до корня проекта
+ASSETS_DIR = APP_DIR / 'assets'
+
 
 class URLs:
     BASE_URL = "https://foodgram-frontend-1.prakticum-team.ru/"
@@ -23,7 +26,7 @@ RECIPE_DATA_SETS = [
         "description": "Классическая кротовуха",
         "time": "15",
         "amount": "12",
-        "patch_image": str(Path("data/images/test_image1.png").resolve())
+        "patch_image": ASSETS_DIR / 'test_image1.png'
     },
     {
         "name": f"Борщ фруктовый {get_random_number()}",
@@ -32,7 +35,7 @@ RECIPE_DATA_SETS = [
         "description": "Пряный салат для любителей острых вкусов",
         "time": "20",
         "amount": "10",
-        "patch_image": str(Path("data/images/test_image2.png").resolve())
+        "patch_image": ASSETS_DIR / 'test_image2.png'
     },
     {
         "name": f"Окрошка на миндальном молоке с раками {get_random_number()}",
@@ -41,7 +44,7 @@ RECIPE_DATA_SETS = [
         "description": "Классический рецепт с нежным вкусом",
         "time": "10",
         "amount": "15",
-        "patch_image": str(Path("data/images/test_image3.png").resolve())
+        "patch_image": ASSETS_DIR / 'test_image3.png'
     }
 ]
 
