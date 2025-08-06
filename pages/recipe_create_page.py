@@ -1,6 +1,5 @@
 from .base_page import BasePage
 from locators import RecipeCreateLocators
-import random
 
 
 class RecipeCreatePage(BasePage):

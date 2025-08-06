@@ -9,7 +9,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def browser():
     options = Options()
     options.add_argument("--headless=new")
@@ -19,7 +19,7 @@ def browser():
     driver.quit()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def registered_user(browser):
     name, lastname, username, email, password = generate_credentials()
     browser.get(URLs.REGISTER_URL)

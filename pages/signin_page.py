@@ -11,11 +11,11 @@ class SigninPage(BasePage):
         self.click_with_wait(LoginLocators.LOGOUT_BUTTON)
 
     def login(self, email, password):
+        self.refresh()
         self.wait_for_overlay(LoginLocators.EMAIL)
         self.input_text(LoginLocators.EMAIL, email)
         self.input_text(LoginLocators.PASSWORD, password)
         self.click_with_wait(LoginLocators.SUBMIT_BUTTON)
-        self.handle_login_alert_and_reload(LoginLocators.LOGIN_ERROR_ALERT)
 
     def new_register(self):
         self.wait_for_overlay(LoginLocators.EMAIL)

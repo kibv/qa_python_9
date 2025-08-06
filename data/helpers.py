@@ -1,8 +1,14 @@
 import random
 import uuid
 
+
+def generate_recipe_data(data):
+    return random.choice(data)
+
+
 def get_random_number():
     return str(random.randint(10000000, 90000000))
+
 
 def generate_credentials():
     password = f"fsZ{str(uuid.uuid4())[:-30]}{get_random_number()}"

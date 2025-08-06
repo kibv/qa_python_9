@@ -1,7 +1,6 @@
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 
 class BasePage:
@@ -75,21 +74,6 @@ class BasePage:
     def wait_el(self, locator):
         return self.wait.until(EC.presence_of_element_located(locator))
 
-    def drag_and_drop_js(self, source_locator, target_locator):
-        source = self.wait.until(EC.visibility_of_element_located(source_locator))
-        target = self.wait.until(EC.visibility_of_element_located(target_locator))
-        script = """
-        function simulateDragDrop(sourceNode, targetNode) {
-            var event = new MouseEvent('dragstart', { bubbles: true });
-            sourceNode.dispatchEvent(event);
-            event = new MouseEvent('dragover', { bubbles: true });
-            targetNode.dispatchEvent(event);
-            event = new MouseEvent('drop', { bubbles: true });
-            targetNode.dispatchEvent(event);
-        }
-        simulateDragDrop(arguments[0], arguments[1]);
-        """
-        self.driver.execute_script(script, source, target)
 
     def wait_for_overlay(self, locator):
         wait = WebDriverWait(self.driver, 10)
@@ -129,13 +113,3 @@ class BasePage:
             return True
         except TimeoutException:
             return False
-
-    def handle_login_alert_and_reload(self, locator):
-        """Если появляется ошибка авторизации — перезагружаем страницу"""
-        try:
-            alert = self.wait.until(EC.presence_of_element_located(locator))
-            if "Невозможно войти с предоставленными учетными данными" in alert.text:
-                self.driver.refresh()
-        except (TimeoutException, NoSuchElementException):
-            pass
-

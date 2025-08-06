@@ -16,8 +16,6 @@ class LoginLocators:
     PASSWORD = (By.XPATH, "//input[@name='password']")
     SUBMIT_BUTTON = (By.XPATH, "//button[text()='Войти']")
     REGISTER_BUTTON = (By.LINK_TEXT, "Создать аккаунт")
-    # LOGOUT_BUTTON = (By.LINK_TEXT, "Выход")
-    # LOGIN_BUTTON = (By.XPATH, "//a[@href='/signin' and text()='Войти']")
     LOGIN_BUTTON = (By.LINK_TEXT, "Войти")
     ALERT_LOC = (By.CLASS_NAME, "styles_module__error__V_Ub0")
     LOGOUT_BUTTON = (By.XPATH, "//a[@class='styles_menuLink__3a59I' and text()='Выход']")
@@ -46,21 +44,6 @@ class RecipeCreateLocators:
     CREATE_BUTTON = (By.XPATH, "//button[contains(text(), 'Создать рецепт')]")
     RECIPE_CARD_TITLE = (By.CLASS_NAME, "card__title")
     LOGOUT_BUTTON = (By.XPATH, "//a[@class='styles_menuLink__3a59I' and text()='Выход']")
-
-
     @staticmethod
     def recipe_card_by_name(name: str):
         return By.XPATH, f"//div[contains(@class, 'style_card__1Le2w')]//a[contains(text(), '{name}')]"
-
-
-class SubscriptionsLocators:
-    AUTHOR_NAME = (By.CLASS_NAME, "card__author-name")
-    UNSUBSCRIBE_BUTTON = (By.CLASS_NAME, "card__subscribe")
-
-
-class FavoritesLocators:
-    RECIPE_CARD = (By.CLASS_NAME, "card__title")
-
-
-class CartLocators:
-    ITEMS = (By.CLASS_NAME, "cart__item")

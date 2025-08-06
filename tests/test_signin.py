@@ -20,4 +20,3 @@ class TestSignin:
         with allure.step("Проверка кнопки выхода"):
             login.open(URLs.BASE_URL)
             assert login.check_elem_logout(), "Кнопка выхода не отображается"
-            login.go_logout()
