@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  selenoid:
+    image: aerokube/selenoid:latest-release
+    container_name: selenoid
+    ports:
+      - "4444:4444"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./selenoid:/etc/selenoid
+    command:
+      - "-conf"
+      - "/etc/selenoid/browsers.json"
+      - "-log-output-dir"
+      - "/opt/selenoid/video"
+      - "-container-network"
+      - "qa_network"
+    networks:
+      - qa_network
+
+  tests:
+    build: .
+    depends_on:
+      - selenoid
+    environment:
+      - SELENOID_URL=http://selenoid:4444/wd/hub
+    networks:
+      - qa_network
+
+networks:
+  qa_network:
+    external: true
