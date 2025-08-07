@@ -16,11 +16,8 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Опционально, если Docker не установлен (обычно на ubuntu-latest он есть)
-      # - name: Install Docker CLI
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -y docker.io
+      - name: Create external Docker network
+        run: docker network create qa_network || true
 
       - name: Build and run Docker Compose
         run: |
