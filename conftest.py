@@ -16,7 +16,6 @@ def browser():
     options.set_capability("browserName", "chrome")
     options.set_capability("browserVersion", "114.0")
 
-    # 👇 Selenoid-specific options
     options.set_capability("selenoid:options", {
         "enableVNC": True,
         "enableVideo": False,
@@ -29,20 +28,6 @@ def browser():
     )
     yield driver
     driver.quit()
-
-# @pytest.fixture(scope='session')
-# def browser():
-#     options = Options()
-#     options.browser_version = "114.0"
-#     options.set_capability("browserName", "chrome")
-#
-#     driver = webdriver.Remote(
-#         command_executor="http://selenoid:4444/wd/hub",
-#         options=options
-#     )
-#     yield driver
-#     driver.quit()
-
 
 
 @pytest.fixture(scope="function")
