@@ -1,13 +1,17 @@
-FROM python:3.9
-
-LABEL authors="v.kib"
+# Используем официальный образ Python
+FROM python:3.9-slim
 
 # Установка рабочей директории
 WORKDIR /app
 
-# Копирование файла зависимостей и установка
+# Установка системных зависимостей (для Selenium и Chrome)
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Копирование файла зависимостей и установка Python-пакетов
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Копирование всего проекта
 COPY . .

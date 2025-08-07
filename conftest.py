@@ -1,38 +1,48 @@
 import pytest
-import pytest
-from selenium import webdriver
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from pages.signup_page import SignupPage
 from pages.signin_page import SigninPage
 from data.data import URLs
 from data.helpers import generate_credentials
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.service import Service
+import os
 
 
-@pytest.fixture(scope="function")
-def driver():
-    chrome_options = Options()
-    chrome_options.browser_version = "128.0"  # Указываем версию из browsers.json
-    chrome_options.set_capability("enableVNC", True)  # Опционально для Selenoid
-    chrome_options.set_capability("enableVideo", False)  # Опционально
+@pytest.fixture
+def browser():
+    selenoid_url = os.getenv("SELENOID_URL", "http://selenoid:4444/wd/hub")
+
+    options = Options()
+    options.set_capability("browserName", "chrome")
+    options.set_capability("browserVersion", "114.0")
+
+    # 👇 Selenoid-specific options
+    options.set_capability("selenoid:options", {
+        "enableVNC": True,
+        "enableVideo": False,
+        "screenResolution": "1920x1080x24"
+    })
 
     driver = webdriver.Remote(
-        command_executor='http://selenoid:4444/wd/hub',
-        options=chrome_options
+        command_executor=selenoid_url,
+        options=options
     )
     yield driver
     driver.quit()
-#
-# @pytest.fixture(scope="function")
+
+# @pytest.fixture(scope='session')
 # def browser():
 #     options = Options()
-#     options.add_argument("--headless=new")
-#     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-#     options.add_argument("--window-size=1920,1080")
+#     options.browser_version = "114.0"
+#     options.set_capability("browserName", "chrome")
+#
+#     driver = webdriver.Remote(
+#         command_executor="http://selenoid:4444/wd/hub",
+#         options=options
+#     )
 #     yield driver
 #     driver.quit()
+
 
 
 @pytest.fixture(scope="function")
