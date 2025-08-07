@@ -8,6 +8,7 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -15,16 +16,22 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      # Опционально, если Docker не установлен (обычно на ubuntu-latest он есть)
+      # - name: Install Docker CLI
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y docker.io
+
       - name: Build and run Docker Compose
         run: |
-          docker-compose up --build -d selenoid
-          docker-compose run tests
-          docker-compose down
+          docker compose up --build -d selenoid
+          docker compose run tests
+          docker compose down
 
       - name: Generate Allure Report
         if: always()  # Выполняется даже при ошибках
         run: |
-          docker-compose run tests allure generate /app/allure-results -o /app/allure-report --clean
+          docker compose run tests allure generate /app/allure-results -o /app/allure-report --clean
           cp -r allure-report allure-results/history
 
       - name: Upload Allure Report
