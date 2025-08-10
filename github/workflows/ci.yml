@@ -1,38 +1,79 @@
-name: CI
+name: Python CI with Selenoid
 
-on:
-  push:
-    branches:
-      - develop
+on: [push, pull_request]
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    services:
+      selenoid:
+        image: aerokube/selenoid:latest-release
+        ports:
+          - "4444:4444"
+        volumes:
+          - "/var/run/docker.sock:/var/run/docker.sock"
+          - "${{ github.workspace }}/config/selenoid:/etc/selenoid"
+        env:
+          OVERRIDE_HOME: /etc/selenoid
+        options: >-
+          --health-cmd "wget -q -O - http://localhost:4444/status"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build and run Docker Compose
+      - name: Validate config
         run: |
-          docker-compose up --build -d selenoid
-          docker-compose run tests
-          docker-compose down
+          echo "Checking config directory..."
+          if [ ! -d "config/selenoid" ]; then
+            echo "❌ config/selenoid directory missing!"
+            exit 1
+          fi
+          if [ ! -f "config/selenoid/browsers.json" ]; then
+            echo "❌ browsers.json file missing!"
+            exit 1
+          fi
+          echo "✓ Config validated"
 
-      - name: Generate Allure Report
-        if: always()  # Выполняется даже при ошибках
+      - name: Pull browser images
         run: |
-          docker-compose run tests allure generate /app/allure-results -o /app/allure-report --clean
-          cp -r allure-report allure-results/history
+          docker pull selenoid/chrome:128.0
+          # Добавьте другие образы при необходимости
+          # docker pull selenoid/firefox:latest
 
-      - name: Upload Allure Report
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        env:
+          SELENOID_URI: "http://localhost:4444/wd/hub"
+        run: |
+          echo "Waiting for Selenoid to be ready..."
+          while ! curl -s http://localhost:4444/status | grep -q '"total":1'; do
+            sleep 1
+            echo -n "."
+          done
+          echo -e "\nSelenoid ready!"
+          
+          python -m pytest -v tests/
+          # Для отладки:
+          # python -c "import os; print('SELENOID_URI:', os.getenv('SELENOID_URI'))"
+
+      - name: Upload reports (опционально)
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: allure-report
-          path: allure-report
-
-    env:
-      DOCKER_BUILDKIT: 1
+          name: test-reports
+          path: |
+            test-reports/
+            screenshots/

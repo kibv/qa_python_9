@@ -1,33 +1,31 @@
-version: "3.8"
+version: '3.8'
 
 services:
   selenoid:
     image: aerokube/selenoid:latest-release
-    container_name: selenoid
     ports:
       - "4444:4444"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./selenoid:/etc/selenoid
-    command:
-      - "-conf"
-      - "/etc/selenoid/browsers.json"
-      - "-log-output-dir"
-      - "/opt/selenoid/video"
-      - "-container-network"
-      - "qa_network"
-    networks:
-      - qa_network
-
-  tests:
-    build: .
-    depends_on:
-      - selenoid
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./config/selenoid:/etc/selenoid"
     environment:
-      - SELENOID_URL=http://selenoid:4444/wd/hub
-    networks:
-      - qa_network
+      OVERRIDE_HOME: /etc/selenoid
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:4444/status"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-networks:
-  qa_network:
-    external: true
+  python-tests:
+    image: python:3.10-slim
+    volumes:
+      - .:/app
+    working_dir: /app
+    depends_on:
+      selenoid:
+        condition: service_healthy
+    environment:
+      SELENOID_URI: "http://selenoid:4444/wd/hub"
+    command: >
+      sh -c "pip install -r requirements.txt &&
+             pytest -v tests/"
