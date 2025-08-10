@@ -1,0 +1,15 @@
+FROM openjdk:17-alpine
+
+RUN apk add --no-cache \
+    bash \
+    curl \
+    unzip
+
+ENV ALLURE_VERSION=2.24.0
+RUN curl -o allure-commandline.zip -Ls https://github.com/allure-framework/allure2/releases/download/$ALLURE_VERSION/allure-commandline-$ALLURE_VERSION.zip \
+    && unzip allure-commandline.zip -d /opt/ \
+    && rm allure-commandline.zip \
+    && ln -s /opt/allure-$ALLURE_VERSION/bin/allure /usr/bin/allure \
+    && allure --version
+
+ENTRYPOINT ["allure"]

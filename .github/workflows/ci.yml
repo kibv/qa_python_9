@@ -1,0 +1,63 @@
+name: Python CI with Selenoid
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    services:
+      selenoid:
+        image: aerokube/selenoid:1.10.7
+        ports:
+          - "4444:4444"
+        volumes:
+          - "/var/run/docker.sock:/var/run/docker.sock"
+          - "${{ github.workspace }}/config/selenoid:/etc/selenoid"
+        env:
+          OVERRIDE_HOME: /etc/selenoid
+        options: >-
+          --health-cmd "wget -q -O - http://localhost:4444/status"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate config
+        run: ls -la config/selenoid
+
+      - name: Pull browser images
+        run: docker pull selenoid/chrome:128.0
+
+      - name: Start Selenoid
+        run: docker-compose up -d selenoid
+
+      - name: Wait for Selenoid
+        run: |
+          echo "Waiting for Selenoid..."
+          while ! curl -s http://localhost:4444/status; do
+            sleep 1
+          done
+
+      - name: Run tests
+        run: docker-compose run --rm test-runner
+
+      - name: Generate Allure report
+        if: always()
+        run: |
+          docker run --rm \
+            -v $(pwd)/allure-results:/app/allure-results \
+            -v $(pwd)/allure-report:/app/allure-report \
+            allure \
+            allure generate /app/allure-results -o /app/allure-report --clean
+
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-report
+          path: allure-report

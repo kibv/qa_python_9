@@ -1,0 +1,4 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","14186","test_create_recipe","tests","Wed Aug 06 17:02:24 MSK 2025","passed","Wed Aug 06 17:02:38 MSK 2025","TestRecipe","test_recipe_create","",""
+"","1036","test_registration","tests","Wed Aug 06 17:02:49 MSK 2025","passed","Wed Aug 06 17:02:50 MSK 2025","TestSignup","test_signup","",""
+"","2275","test_autorizacion","tests","Wed Aug 06 17:02:43 MSK 2025","passed","Wed Aug 06 17:02:45 MSK 2025","TestSignin","test_signin","",""
